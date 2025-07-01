@@ -60,7 +60,7 @@ CELERY_RESULT_SERIALIZER = 'customjson'
 
 # Authentication settings
 AUTH_REQUIRED = False
-AUTH_PROVIDER = 'basic'  # basic (default), ldap, github, openid, saml2, azure, cognito, gitlab, google, keycloak
+AUTH_PROVIDER = 'basic'  # basic (default), ldap, github, openid, saml2, azure, cognito, gitlab, google, keycloak, cas
 ADMIN_USERS = []  # type: List[str]
 DEFAULT_ADMIN_ROLE = 'admin'
 ADMIN_ROLES = [DEFAULT_ADMIN_ROLE]
@@ -162,6 +162,13 @@ SAML2_USER_NAME_FORMAT = '{givenName} {surname}'
 SAML2_EMAIL_ATTRIBUTE = 'emailAddress'
 SAML2_CONFIG = {}  # type: Dict[str, Any]
 ALLOWED_SAML2_GROUPS = ['*']
+
+# CAS
+CAS_VALIDATE_URL = None
+CAS_NAME_ATTRIBUTE = 'displayName'
+CAS_EMAIL_ATTRIBUTE = 'email'
+CAS_GROUPS_ATTRIBUTE = 'groups'
+ALLOWED_CAS_GROUPS = ['*']
 
 TOKEN_EXPIRE_DAYS = 14
 API_KEY_EXPIRE_DAYS = 365  # 1 year

@@ -69,6 +69,12 @@ class Config:
         config['OIDC_ISSUER_URL'] = get_config('OIDC_ISSUER_URL', default=None, type=str, config=config)
         config['ALLOWED_OIDC_ROLES'] = get_config('ALLOWED_OIDC_ROLES', default=[], type=list, config=config)
 
+        config['CAS_VALIDATE_URL'] = get_config('CAS_VALIDATE_URL', default=None, type=str, config=config)
+        config['CAS_NAME_ATTRIBUTE'] = get_config('CAS_NAME_ATTRIBUTE', default=None, type=str, config=config)
+        config['CAS_EMAIL_ATTRIBUTE'] = get_config('CAS_EMAIL_ATTRIBUTE', default=None, type=str, config=config)
+        config['CAS_GROUPS_ATTRIBUTE'] = get_config('CAS_GROUPS_ATTRIBUTE', default=None, type=str, config=config)
+        config['ALLOWED_CAS_GROUPS'] = get_config('ALLOWED_CAS_GROUPS', default=[], type=list, config=config)
+
         config['CORS_ORIGINS'] = get_config('CORS_ORIGINS', default=[], type=list, config=config)
 
         config['MAIL_FROM'] = get_config('MAIL_FROM', default=None, type=str, config=config)

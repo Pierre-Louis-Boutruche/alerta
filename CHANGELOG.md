@@ -1,3 +1,9 @@
+## v9.0.4 (unreleased)
+
+### Feat
+
+- Add CAS authentication
+
 ## v9.0.1 (2023-06-22)
 
 ### Feat
