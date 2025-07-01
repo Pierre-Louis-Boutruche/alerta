@@ -75,11 +75,30 @@ def cas_login():
     scopes = Permission.lookup(login=user.login, roles=user.roles + groups)
     customers = get_customers(login=user.login, groups=groups + ([user.domain] if user.domain else []))
 
-    auth_audit_trail.send(current_app._get_current_object(), event='cas-login', message='user login via CAS',
-                          user=user.login, customers=customers, scopes=scopes, roles=user.roles, groups=groups,
-                          resource_id=user.id, type='user', request=request)
+    auth_audit_trail.send(
+        current_app._get_current_object(),
+        event='cas-login',
+        message='user login via CAS',
+        user=user.login,
+        customers=customers,
+        scopes=scopes,
+        roles=user.roles,
+        groups=groups,
+        resource_id=user.id,
+        type='user',
+        request=request,
+    )
 
-    token = create_token(user_id=user.id, name=user.name, login=user.login, provider='cas',
-                         customers=customers, scopes=scopes, roles=user.roles, groups=groups,
-                         email=user.email, email_verified=user.email_verified)
+    token = create_token(
+        user_id=user.id,
+        name=user.name,
+        login=user.login,
+        provider='cas',
+        customers=customers,
+        scopes=scopes,
+        roles=user.roles,
+        groups=groups,
+        email=user.email,
+        email_verified=user.email_verified,
+    )
     return jsonify(token=token.tokenize())
