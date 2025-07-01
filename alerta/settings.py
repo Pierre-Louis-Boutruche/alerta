@@ -60,7 +60,7 @@ CELERY_RESULT_SERIALIZER = 'customjson'
 
 # Authentication settings
 AUTH_REQUIRED = False
-AUTH_PROVIDER = 'basic'  # basic (default), ldap, github, openid, saml2, azure, cognito, gitlab, google, keycloak
+AUTH_PROVIDER = 'basic'  # basic (default), ldap, github, openid, saml2, azure, cognito, gitlab, google, keycloak, cas
 ADMIN_USERS = []  # type: List[str]
 DEFAULT_ADMIN_ROLE = 'admin'
 ADMIN_ROLES = [DEFAULT_ADMIN_ROLE]
@@ -135,6 +135,13 @@ LDAP_GROUP_NAME_ATTR = 'dn'  # eg. dn, memberOf, or cn
 LDAP_DEFAULT_DOMAIN = ''  # if set allows users to login with bare username
 LDAP_CONFIG = {}  # type: Dict[str, Any]
 ALLOWED_LDAP_GROUPS = ['*']
+
+# CAS
+CAS_SERVER_URL = ''
+CAS_VERSION = '3'
+CAS_RENEW = False
+CAS_VERIFY_SSL = True
+CAS_USERNAME_ATTRIBUTE = None
 
 # Microsoft Identity Platform (v2.0)
 AZURE_TENANT = 'common'  # "common", "organizations", "consumers" or tenant ID

@@ -2071,3 +2071,71 @@ class AuthProvidersTestCase(unittest.TestCase):
             token_endpoint_request.headers.get('Authorization'),
             'Basic MG9hYzVzNDZ6d2g1Y3JHaUgzNTY6b2F1dGgyLWNsaWVudC1zZWNyZXQ='
         )
+
+    @requests_mock.mock()
+    def test_cas(self, m):
+
+        test_config = {
+            'TESTING': True,
+            'AUTH_REQUIRED': True,
+            'AUTH_PROVIDER': 'cas',
+            'CAS_SERVER_URL': 'https://cas.example.com',
+            'CUSTOMER_VIEWS': True,
+        }
+
+        cas_response = """
+        <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+          <cas:authenticationSuccess>
+            <cas:user>jdoe</cas:user>
+            <cas:attributes>
+              <cas:email>jdoe@example.com</cas:email>
+              <cas:groups>dev</cas:groups>
+            </cas:attributes>
+          </cas:authenticationSuccess>
+        </cas:serviceResponse>
+        """
+
+        m.get('https://cas.example.com/p3/serviceValidate', text=cas_response)
+
+        self.app = create_app(test_config)
+        self.client = self.app.test_client()
+
+        with self.app.test_request_context('/'):
+            self.app.preprocess_request()
+            self.api_key = ApiKey(
+                user='admin@alerta.io',
+                scopes=[Scope.admin, Scope.read, Scope.write],
+                text='demo-key'
+            )
+            self.api_key.create()
+
+        self.headers = {
+            'Authorization': f'Key {self.api_key.key}',
+            'Content-type': 'application/json'
+        }
+
+        payload = {
+            'customer': 'Example Corp',
+            'match': 'dev'
+        }
+        response = self.client.post('/customer', data=json.dumps(payload),
+                                    content_type='application/json', headers=self.headers)
+        self.assertEqual(response.status_code, 201)
+
+        login_payload = {
+            'ticket': 'ST-12345',
+            'service': 'http://localhost:8080'
+        }
+
+        response = self.client.post('/auth/cas', data=json.dumps(login_payload),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200, response.data)
+        data = json.loads(response.data.decode('utf-8'))
+
+        with self.app.test_request_context('/'):
+            claims = Jwt.parse(data['token'], verify=False)
+
+        self.assertEqual(claims.preferred_username, 'jdoe', claims)
+        self.assertEqual(claims.email, 'jdoe@example.com', claims)
+        self.assertEqual(claims.provider, 'cas', claims)
+        self.assertEqual(claims.customers, ['Example Corp'], claims)

@@ -16,6 +16,14 @@ class AuthBlueprint(Blueprint):
         else:
             from . import basic  # noqa
 
+        if app.config['AUTH_PROVIDER'] == 'cas':
+            try:
+                import cas  # noqa
+
+                from . import cas  # noqa
+            except ImportError:
+                raise RuntimeError('Must install python-cas to use CAS authentication module')
+
         if app.config['AUTH_PROVIDER'] == 'saml2':
             try:
                 import saml2  # noqa
@@ -38,7 +46,7 @@ class AuthBlueprint(Blueprint):
 auth = AuthBlueprint('auth', __name__)
 
 
-from . import github, login, logout, oidc, userinfo   # noqa isort:skip
+from . import github, login, logout, oidc, userinfo, cas  # noqa isort:skip
 
 
 @auth.before_request
