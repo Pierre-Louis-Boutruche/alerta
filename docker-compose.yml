@@ -10,12 +10,16 @@ services:
     environment:
       # - DEBUG=1  # remove this line to turn DEBUG off
       - DATABASE_URL=postgres://postgres:postgres@db:5432/monitoring
+      - AUTH_REQUIRED=True
+      - AUTH_PROVIDER=github
+      - OAUTH2_CLIENT_ID=Ov23liIZeZUOm3sQ6Ly9
+      - OAUTH2_CLIENT_SECRET=55b363acb0cbaf2392770b354d462554cbd1c96d
     restart: always
 
   db:
     image: postgres
     ports:
-      - 5432
+      - 5432:5432
     environment:
       POSTGRES_DB: monitoring
       POSTGRES_USER: postgres
