@@ -1,4 +1,4 @@
-from flask import Blueprint, app, request
+from flask import Blueprint, request
 
 from alerta.exceptions import ApiError
 
@@ -24,12 +24,6 @@ class AuthBlueprint(Blueprint):
             except ImportError:
                 raise RuntimeError('Must install pysaml2 to use SAML2 authentication module')
 
-        if app.config['AUTH_PROVIDER'] == 'cas':
-            try:
-                from . import cas
-            except ImportError as e:
-                raise RuntimeError(f"Failed to load CAS authentication module: {e}")
-            
         if app.config['AUTH_PROVIDER'] in ['openid', 'azure', 'cognito', 'gitlab', 'keycloak']:
             try:
                 oidc_config, _ = oidc.get_oidc_configuration(app)
@@ -44,7 +38,7 @@ class AuthBlueprint(Blueprint):
 auth = AuthBlueprint('auth', __name__)
 
 
-from . import github, login, logout, oidc, userinfo   # noqa isort:skip
+from . import github, login, logout, oidc, userinfo, cas   # noqa isort:skip
 
 
 @auth.before_request

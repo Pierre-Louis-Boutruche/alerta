@@ -163,11 +163,11 @@ SAML2_EMAIL_ATTRIBUTE = 'emailAddress'
 SAML2_CONFIG = {}  # type: Dict[str, Any]
 ALLOWED_SAML2_GROUPS = ['*']
 
-CAS_SERVER = None # eg. 'https://cas.example.com/cas'
-CAS_VALIDATE_ROUTE = '/serviceValidate' # CAS service validation endpoint
-CAS_ROLE_CLAIM = 'cas:roles' # attribut côté CAS
+CAS_SERVER = None  # eg. 'https://cas.example.com/cas'
+CAS_VALIDATE_ROUTE = '/serviceValidate'  # CAS service validation endpoint
+CAS_ROLE_CLAIM = 'cas:roles'  # attribut côté CAS
 CAS_GROUP_CLAIM = 'cas:listesiteweb'
-CAS_RESPONSE_TYPE = 'AUTO' # 'AUTO' (default), 'JSON' or 'XML'
+CAS_RESPONSE_TYPE = 'AUTO'  # 'AUTO' (default), 'JSON' or 'XML'
 
 TOKEN_EXPIRE_DAYS = 14
 API_KEY_EXPIRE_DAYS = 365  # 1 year
