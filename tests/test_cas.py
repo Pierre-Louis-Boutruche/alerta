@@ -37,14 +37,24 @@ class CasAuthTestCase(unittest.TestCase):
                 }
             }
         }
-        m.get('https://cas.example.com/serviceValidate',
-              json=response,
-              headers={'Content-Type': 'application/json'})
+        m.get(
+            'https://cas.example.com/serviceValidate',
+            json=response,
+            headers={'Content-Type': 'application/json'}
+        )
         with self.app.app_context():
-            success, username, attrs, raw = validate_cas('ST-1', 'svc', self.app.config['CAS_SERVER'])
+            success, username, attrs, raw = validate_cas(
+                'ST-1',
+                'svc',
+                self.app.config['CAS_SERVER']
+            )
         self.assertTrue(success)
         self.assertEqual(username, 'jdoe')
-        self.assertEqual(attrs, {'mail': 'jdoe@example.com', 'roles': ['user']})
+        # flatten_attrs turns single-item lists into scalars
+        self.assertEqual(attrs, {
+            'mail': 'jdoe@example.com',
+            'roles': 'user'
+        })
         self.assertEqual(raw, response)
 
     @requests_mock.Mocker()
@@ -57,11 +67,17 @@ class CasAuthTestCase(unittest.TestCase):
     </cas:attributes>
   </cas:authenticationSuccess>
 </cas:serviceResponse>"""
-        m.get('https://cas.example.com/serviceValidate',
-              text=xml,
-              headers={'Content-Type': 'text/xml'})
+        m.get(
+            'https://cas.example.com/serviceValidate',
+            text=xml,
+            headers={'Content-Type': 'text/xml'}
+        )
         with self.app.app_context():
-            success, username, attrs, raw = validate_cas('ST-2', 'svc', self.app.config['CAS_SERVER'])
+            success, username, attrs, raw = validate_cas(
+                'ST-2',
+                'svc',
+                self.app.config['CAS_SERVER']
+            )
         self.assertTrue(success)
         self.assertEqual(username, 'jdoe')
         self.assertEqual(attrs, {'mail': 'jdoe@example.com'})
@@ -77,12 +93,22 @@ class CasAuthTestCase(unittest.TestCase):
                 }
             }
         }
-        m.get('https://cas.example.com/serviceValidate',
-              json=failure,
-              headers={'Content-Type': 'application/json'})
+        m.get(
+            'https://cas.example.com/serviceValidate',
+            json=failure,
+            headers={'Content-Type': 'application/json'}
+        )
         with self.app.app_context():
-            success, username, attrs, raw = validate_cas('BAD', 'svc', self.app.config['CAS_SERVER'])
+            success, username, attrs, raw = validate_cas(
+                'BAD',
+                'svc',
+                self.app.config['CAS_SERVER']
+            )
         self.assertFalse(success)
         self.assertIsNone(username)
         self.assertEqual(attrs, {})
         self.assertEqual(raw, failure)
+
+
+if __name__ == '__main__':
+    unittest.main()
