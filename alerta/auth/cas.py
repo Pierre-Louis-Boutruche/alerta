@@ -38,7 +38,6 @@ def validate_cas(ticket, service, cas_server, validate_route="/serviceValidate")
     fmt = current_app.config.get("CAS_RESPONSE_TYPE", "AUTO").upper()
     if fmt not in ("AUTO", "JSON", "XML"):
         fmt = "AUTO"
-    LOG.debug("CAS response type config: %s", fmt)
 
     # Build request parameters
     url = f"{cas_server.rstrip('/')}{validate_route}"
@@ -49,14 +48,8 @@ def validate_cas(ticket, service, cas_server, validate_route="/serviceValidate")
     if want_json:
         params["format"] = "JSON"
 
-    LOG.debug("CAS validation URL           : %s", url)
-    LOG.debug("CAS validation request params: %r", params)
-
     try:
         resp = requests.get(url, params=params, timeout=5)
-        LOG.debug("CAS response status          : %s", resp.status_code)
-        LOG.debug("CAS response headers         : %r", resp.headers)
-        LOG.debug("CAS raw response body        : %s", resp.text)
         resp.raise_for_status()
     except requests.RequestException as e:
         LOG.exception("Failed to contact CAS server")
@@ -94,7 +87,6 @@ def validate_cas(ticket, service, cas_server, validate_route="/serviceValidate")
     #  - JSON was not requested/supported, or
     #  - JSON branch fell through in AUTO mode
     # --- XML PATH ---
-    LOG.debug("Parsing CAS response as XML")
     try:
         root = ET.fromstring(resp.text)
         ns = {"cas": "http://www.yale.edu/tp/cas"}
@@ -114,7 +106,6 @@ def validate_cas(ticket, service, cas_server, validate_route="/serviceValidate")
             return False, None, {}, resp.text
 
         username = success.findtext("cas:user", None, ns)
-        LOG.debug("Extracted username from XML: %r", username)
 
         # collect attributes
         raw_attrs = {}
@@ -123,7 +114,6 @@ def validate_cas(ticket, service, cas_server, validate_route="/serviceValidate")
             for child in attr_block:
                 key = child.tag.split("}", 1)[-1]
                 raw_attrs[key] = child.text
-            LOG.debug("Extracted raw attributes from XML: %r", raw_attrs)
 
         attrs = flatten_attrs(raw_attrs)
         return True, username, attrs, resp.text
