@@ -83,25 +83,24 @@ def cas_login():
     if not ticket or not service:
         raise ApiError("Fields 'ticket' and 'service' are required", 400)
 
-    cas_server = current_app.config.get("CAS_SERVER")
+    cas_server = current_app.config["CAS_SERVER"]
     if not cas_server:
         raise ApiError("Missing CAS_SERVER configuration", 500)
 
-    validate_route = current_app.config.get("CAS_VALIDATE_ROUTE", "/serviceValidate")
+    validate_route = current_app.config["CAS_VALIDATE_ROUTE"] or "/serviceValidate"
 
     success, cas_username, attrs = validate_cas(ticket, service, cas_server, validate_route)
+
+    print(f"CAS validation result: {success}, username: {cas_username}, attributes: {attrs}")
 
     if not success:
         raise ApiError("Invalid CAS ticket", 401)
 
     # Map CAS attributes to Alerta User model
     login = cas_username
-    email = attrs.get("mail") or attrs.get("email") \
-        or f"{login}@{current_app.config.get('DEFAULT_EMAIL_DOMAIN', '')}"
-    email_verified = "mail" in attrs or "email" in attrs
 
-    role_claim = current_app.config.get("CAS_ROLE_CLAIM", "roles")
-    group_claim = current_app.config.get("CAS_GROUP_CLAIM", "groups")
+    role_claim = current_app.config["CAS_ROLE_CLAIM"] or "roles"
+    group_claim = current_app.config["CAS_GROUP_CLAIM"] or "groups"
 
     roles_from_cas = attrs.get(role_claim, "").split(",") if attrs.get(role_claim) else []
     groups_from_cas = attrs.get(group_claim, "").split(",") if attrs.get(group_claim) else []
